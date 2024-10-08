@@ -91,7 +91,7 @@ class _CardsGridState extends State<CardsGrid> {
                   _cardLetters[index],
                   maxLines: 1,
                   overflow: TextOverflow.fade,
-                  style: TextStyle(fontSize: 35)
+                  style: const TextStyle(fontSize: 35)
                 ),
               ),
             ),
