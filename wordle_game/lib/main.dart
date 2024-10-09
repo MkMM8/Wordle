@@ -85,7 +85,7 @@ class _WordleGameScreenState extends State<WordleGameScreen> {
           ),
         ],
       ),
-      extendBodyBehindAppBar: true,
+      extendBodyBehindAppBar: false,
       body: Stack(
         children: [
           Container(
@@ -100,18 +100,19 @@ class _WordleGameScreenState extends State<WordleGameScreen> {
             color: const Color.fromARGB(255, 255, 255, 255).withOpacity(0.3),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 40.0),
-            child: CardsGrid(),
+          padding: const EdgeInsets.symmetric(horizontal: 40.0),
+          child: Column(
+            children: [
+              Flexible(
+                child: CardsGrid(),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 20.0, 0, 40.0),
+                child: InputWidget(),
+              ),
+            ],
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              40.0,
-              200.0,
-              40.0,
-              40.0,
-            ),
-            child: InputWidget(),
-          ),
+        ),
         ],
       ),
     );
