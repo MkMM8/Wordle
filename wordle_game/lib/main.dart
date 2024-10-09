@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -10,22 +11,98 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-          appBar: AppBar(title: const Text('Wordle')),
-          body: const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 400.0),
-            child: Column(
-              mainAxisAlignment:
-                  MainAxisAlignment.center, // Centramos verticalmente el Column
-              children: [
-                Expanded(
-                  // Asegura que el CardsGrid use el espacio disponible
-                  child:
-                      CardsGrid(), // Incluye CardsGrid directamente en el Column
-                ),
-              ],
+      title: 'Wordle Game',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: WordleGameScreen(),
+    );
+  }
+}
+
+class WordleGameScreen extends StatefulWidget {
+  @override
+  _WordleGameScreenState createState() => _WordleGameScreenState();
+}
+
+class _WordleGameScreenState extends State<WordleGameScreen> {
+  Timer? _timer;
+  int _seconds = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _startTimer();
+  }
+
+  void _startTimer() {
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        _seconds++;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  String get _formattedTime {
+    int minutes = _seconds ~/ 60;
+    int seconds = _seconds % 60;
+    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Palabros',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 24,
+            color: Colors.white,
+          ),
+        ),
+        backgroundColor: const Color.fromARGB(181, 250, 62, 0),
+        elevation: 5,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              _formattedTime,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+                color: Colors.white,
+              ),
             ),
-          )),
+          ),
+        ],
+      ),
+      extendBodyBehindAppBar: true,
+      body: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/palabros_background.jpg'),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          Container(
+            color: Colors.black.withOpacity(0.3),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40.0),
+            child: CardsGrid(),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -38,13 +115,10 @@ class CardsGrid extends StatefulWidget {
 }
 
 class _CardsGridState extends State<CardsGrid> {
-  // Lista que almacena los colores iniciales de cada Card
   final List<Color> _cardColors = List<Color>.generate(
       30, (index) => const Color.fromARGB(255, 228, 230, 233));
-
   final List<String> _cardLetters = List<String>.generate(30, (index) => '');
 
-  // Método para cambiar dinámicamente el color de una tarjeta
   void changeCardColor(int index, int state) {
     var cardStates = {
       0: const Color.fromARGB(255, 255, 255, 255),
@@ -57,8 +131,6 @@ class _CardsGridState extends State<CardsGrid> {
       setState(() {
         _cardColors[index] = cardStates[state]!;
       });
-    } else {
-      //print('Error changing card states.');
     }
   }
 
@@ -70,34 +142,32 @@ class _CardsGridState extends State<CardsGrid> {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      padding: const EdgeInsets.all(10),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 5,
-        crossAxisSpacing: 3,
-        mainAxisSpacing: 3,
-      ),
-      itemCount: _cardColors.length,
-      itemBuilder: (context, index) {
-        return GestureDetector(
-          // La funcion onTap es para testear.
-          onTap: () => {changeCardText(index, 'A')},
-          onDoubleTap: () => {changeCardColor(index, 2)},
-          child: Card(
-            color: _cardColors[index],
-            child: SizedBox(
-              child: Center(
-                child: Text(
-                  _cardLetters[index],
-                  maxLines: 1,
-                  overflow: TextOverflow.fade,
-                  style: const TextStyle(fontSize: 35)
-                ),
+  return GridView.count(
+    padding: const EdgeInsets.all(10),
+    crossAxisCount: 5,
+    crossAxisSpacing: 2,
+    mainAxisSpacing: 2,
+    children: List.generate(_cardColors.length, (index) {
+      return GestureDetector(
+        onTap: () => {changeCardText(index, 'A')},
+        onDoubleTap: () => {changeCardColor(index, 2)},
+        child: Card(
+          color: _cardColors[index],
+          child: SizedBox(
+            height: 30,
+            width: 30,
+            child: Center(
+              child: Text(
+                _cardLetters[index],
+                maxLines: 1,
+                overflow: TextOverflow.fade,
+                style: const TextStyle(fontSize: 35),
               ),
             ),
           ),
-        );
-      },
-    );
-  }
+        ),
+      );
+    }),
+  );
+}
 }
