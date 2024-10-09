@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'palabras.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,6 +17,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: WordleGameScreen(),
+      
     );
   }
 }
@@ -95,11 +97,20 @@ class _WordleGameScreenState extends State<WordleGameScreen> {
             ),
           ),
           Container(
-            color: Colors.black.withOpacity(0.3),
+            color: const Color.fromARGB(255, 255, 255, 255).withOpacity(0.3),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 40.0),
             child: CardsGrid(),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              40.0,
+              200.0,
+              40.0,
+              40.0,
+            ),
+            child: InputWidget(),
           ),
         ],
       ),
@@ -116,8 +127,8 @@ class CardsGrid extends StatefulWidget {
 
 class _CardsGridState extends State<CardsGrid> {
   final List<Color> _cardColors = List<Color>.generate(
-      30, (index) => const Color.fromARGB(255, 228, 230, 233));
-  final List<String> _cardLetters = List<String>.generate(30, (index) => '');
+      25, (index) => const Color.fromARGB(255, 228, 230, 233));
+  final List<String> _cardLetters = List<String>.generate(25, (index) => '');
 
   void changeCardColor(int index, int state) {
     var cardStates = {
@@ -170,4 +181,50 @@ class _CardsGridState extends State<CardsGrid> {
     }),
   );
 }
+
+}
+class InputWidget extends StatefulWidget {
+  const InputWidget({super.key});
+
+  @override
+  _InputWidgetState createState() => _InputWidgetState();
+}
+
+class _InputWidgetState extends State<InputWidget> {
+  final TextEditingController _controller = TextEditingController();
+  String _inputText = '';
+  var palabra = PalabrasdeCinco.obtenerPalabras();
+
+  void _showInput() {
+    setState(() {
+      _inputText = _controller.text;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        TextField(
+          controller: _controller,          
+          decoration: InputDecoration(
+            border: OutlineInputBorder(),
+            filled: true,
+            fillColor: Color.fromARGB(255, 255, 255, 255),
+            labelText: 'Introduce una palabra',
+
+          ),
+        ),
+        SizedBox(height: 20),
+        ElevatedButton(
+          onPressed: _showInput,
+          child: Text('Enviar'),
+        ),
+        SizedBox(height: 20),
+        
+        Text('Palabra introducida: $_inputText y la palabra es $palabra'),
+      ],
+    );
+  }
 }
